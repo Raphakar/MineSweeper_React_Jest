@@ -5,7 +5,7 @@ import BoardInfo from './boardInfo';
 
 
 const FIELD_SIZE = 100;
-const NUMBER_BOMBS = 1;
+const NUMBER_BOMBS = 25;
 
 
 class DeskController extends React.Component {
@@ -14,14 +14,35 @@ class DeskController extends React.Component {
         this.state = {
             flagsPlaced: 0,
             bombsDisarmed: 0,
+            finished: false,
+            generatePositionBombs: (() => {
+                let positionsBombs = [];
+                while (positionsBombs.length < NUMBER_BOMBS) {
+                    let position = Math.floor(Math.random() * FIELD_SIZE);
+                    if (positionsBombs.indexOf(position) === -1)
+                        positionsBombs.push(position);
+                }
+                return positionsBombs;
+            })(),
         }
         this.generateField = this.generateField.bind(this);
         this.flagSquare = this.flagSquare.bind(this);
-
+        this.onLose = this.onLose.bind(this);
     }
 
     generateField() {
         let remainingBombs = NUMBER_BOMBS;
+        // let generatePositionBombs = (() => {
+        //     let positionsBombs = [];
+        //     while (positionsBombs.length < NUMBER_BOMBS) {
+        //         let position = Math.floor(Math.random() * FIELD_SIZE) + 1;
+        //         if (positionsBombs.indexOf(position) === -1)
+        //             positionsBombs.push(position);
+        //     }
+        //     return positionsBombs;
+        // })();
+
+        //Create Object for field.
         return [...Array(FIELD_SIZE).keys()];
     }
 
@@ -39,13 +60,18 @@ class DeskController extends React.Component {
             alert('You Win')
     }
 
-    render() {
 
+    onLose() {
+        alert("You Lost");
+        this.setState({ finished: true })
+    }
+
+    render() {
         return (<Desk boardSize={10}>
             {this.generateField().map(i => (
-                <SquareContent flagSquare={this.flagSquare} key={i} number={4} isBomb={i === 14} disabled={i === 55 || i === 10} />
+                <SquareContent disabled={this.state.finished} onLose={this.onLose} flagSquare={this.flagSquare} key={i} number={4} isBomb={this.state.generatePositionBombs.indexOf(i) !== -1} />
             ))}
-            <BoardInfo numberBombs={NUMBER_BOMBS - this.state.flagsPlaced} />
+            <BoardInfo timerStop={this.state.finished} numberBombs={NUMBER_BOMBS - this.state.flagsPlaced} />
         </Desk>);
     }
 }

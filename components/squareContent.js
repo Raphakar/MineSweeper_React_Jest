@@ -10,9 +10,13 @@ class SquareContent extends React.Component {
             currentDisplay: 0,
             number: props.number,
             isBomb: !!props.isBomb,
-            isDisabled: props.disabled
+            isDisabled: !!props.disabled
         }
         this.onChangeState = this.onChangeState.bind(this);
+    }
+
+    componentWillReceiveProps(newProps) {
+        this.setState({ isDisabled: !!newProps.disabled })
     }
 
     onChangeState(event) {
@@ -21,7 +25,10 @@ class SquareContent extends React.Component {
         switch (event.button) {
             case 0:
                 if (currentDisplay !== 3) {
-                    this.setState({ currentDisplay: !isBomb ? 1 : 2, isDisabled: true })
+                    this.setState({ currentDisplay: !isBomb ? 1 : 2, isDisabled: true }, () => {
+                        if (isBomb)
+                            this.props.onLose();
+                    })
                 }
                 break;
             case 2:

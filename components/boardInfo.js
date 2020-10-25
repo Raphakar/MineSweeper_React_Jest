@@ -19,6 +19,13 @@ class BoardInfo extends React.Component {
         if (newProps.numberBombs !== this.state.flagsAvailable) {
             this.setState({ flagsAvailable: newProps.numberBombs, })
         }
+        if (newProps.timerStop) {
+            clearInterval(this.timer)
+        }
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timer)
     }
 
     render() {
